@@ -70,11 +70,11 @@
         function abrirChamado() {
             var nome = document.getElementById('nome').value;
             var empresa = document.getElementById('empresa').value;
-            var telefone = "5521965979899";
+            var telefone = "5521965979899";  // Código do país + número do telefone
             var mensagem = `Olá, meu nome é ${nome} e trabalho na empresa ${empresa}. Preciso de suporte de TI.`;
             
             if (nome && empresa) {
-                var url = `https://api.whatsapp.com/send?phone=${telefone}&text=${encodeURIComponent(mensagem)}`;
+                var url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
                 window.open(url, '_blank');
             } else {
                 alert("Por favor, preencha todos os campos.");
