@@ -1,38 +1,72 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suporte TI - Axtro Tech</title>
+    <title>Suporte Axtro Tech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #0288d1;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0277bd;
+        }
+    </style>
 </head>
 <body>
-    <h1>Contato para Suporte TI - Axtro Tech</h1>
-    <form id="suporteForm">
-        <label for="nome">Nome:</label><br>
-        <input type="text" id="nome" name="nome" required><br><br>
+    <div class="container">
+        <h1>Suporte de Atendimento TI - Axtro Tech</h1>
+        <form action="mailto:suporte@axtrotech.com" method="POST" enctype="text/plain">
+            <label for="name">Seu Nome:</label>
+            <input type="text" id="name" name="Nome" required>
 
-        <label for="empresa">Empresa:</label><br>
-        <input type="text" id="empresa" name="empresa" required><br><br>
+            <label for="company">Empresa:</label>
+            <input type="text" id="company" name="Empresa" required>
 
-        <label for="necessidade">Descreva sua necessidade:</label><br>
-        <textarea id="necessidade" name="necessidade" rows="4" cols="50" required></textarea><br><br>
+            <label for="issue">Descreva o problema:</label>
+            <textarea id="issue" name="Descrição" rows="4" required></textarea>
 
-        <button type="submit">Enviar para WhatsApp</button>
-    </form>
-
-    <script>
-        document.getElementById('suporteForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const empresa = document.getElementById('empresa').value;
-            const necessidade = document.getElementById('necessidade').value;
-
-            const numeroWhatsApp = '21965979899';
-            const mensagem = `Olá, meu nome é ${nome} da empresa ${empresa}. Preciso de suporte para o seguinte: ${necessidade}`;
-            const url = `https://wa.me/$21965979899?text=${encodeURIComponent(mensagem)}`;
-
-            window.open(url, '_blank');
-        });
-    </script>
+            <input type="submit" value="Enviar">
+        </form>
+    </div>
 </body>
 </html>
