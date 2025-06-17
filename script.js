@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzM5UAhojXgF8DCHVZdGmPKs8ku3jeZ0EhxI5TJoCJu7UPh_b1YQF1JbvXxLgQr2JFk/exec";
+const API_URL = "https://script.google.com/macros/library/d/1HTbEUwgKKO1x0zaDqCfSbU_cXUnCcHvuR6PsAcF6Y8G61rpvOxBQESmo/1";
 
 let gastos = [];
 let entradas = [];
