@@ -1,6 +1,9 @@
 let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 let entradas = JSON.parse(localStorage.getItem("entradas")) || [];
 
+if (!Array.isArray(gastos)) gastos = [];
+if (!Array.isArray(entradas)) entradas = [];
+
 const form = document.getElementById("gastoForm");
 const saldoForm = document.getElementById("saldoForm");
 const resetarBtn = document.getElementById("resetar");
@@ -122,5 +125,16 @@ resetarBtn.addEventListener("click", () => {
     atualizarPainel();
   }
 });
+
+function exportarDados() {
+  const dados = { gastos, entradas };
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "controle-de-gastos.json";
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 atualizarPainel();
