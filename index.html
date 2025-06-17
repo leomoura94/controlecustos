@@ -51,6 +51,20 @@
       <canvas id="graficoGastos" height="200"></canvas>
     </section>
   </div>
+<!-- Adicionar saldo -->
+<form id="saldoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+  <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+  <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+  <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition col-span-1 sm:col-span-1">
+    Adicionar Saldo
+  </button>
+</form>
+
+<!-- Histórico -->
+<section class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+  <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
+  <div id="historico" class="space-y-4 max-h-[300px] overflow-y-auto text-sm"></div>
+</section>
 
   <script src="script.js"></script>
 </body>
