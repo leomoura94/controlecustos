@@ -89,3 +89,90 @@ form.addEventListener("submit", (e) => {
 });
 
 atualizarPainel();
+const saldoForm = document.getElementById("saldoForm");
+const historicoEl = document.getElementById("historico");
+
+// Novo array de saldos adicionados (depósitos)
+let entradas = [];
+if (localStorage.getItem("entradas")) {
+  entradas = JSON.parse(localStorage.getItem("entradas"));
+}
+
+saldoForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const valor = parseFloat(document.getElementById("valorSaldo").value);
+  const descricao = document.getElementById("descricaoSaldo").value.trim();
+
+  if (!valor || valor <= 0 || descricao === "") {
+    alert("Preencha os campos corretamente.");
+    return;
+  }
+
+  entradas.push({ valor, descricao, data: new Date().toISOString() });
+  saldoInicial += valor;
+
+  localStorage.setItem("entradas", JSON.stringify(entradas));
+  localStorage.setItem("saldo", saldoInicial.toString());
+
+  saldoForm.reset();
+  atualizarPainel();
+  renderizarHistorico();
+});
+
+// Mostra histórico organizado por mês
+function renderizarHistorico() {
+  historicoEl.innerHTML = "";
+
+  const todosMovimentos = [
+    ...entradas.map((e) => ({
+      tipo: "entrada",
+      valor: e.valor,
+      descricao: e.descricao,
+      data: new Date(e.data),
+    })),
+    ...gastos.map((g) => ({
+      tipo: "gasto",
+      quem: g.quem,
+      valor: g.valor,
+      categoria: g.categoria,
+      pagamento: g.tipo,
+      data: new Date(g.data),
+    })),
+  ];
+
+  todosMovimentos.sort((a, b) => b.data - a.data);
+
+  const porMes = {};
+
+  todosMovimentos.forEach((mov) => {
+    const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    if (!porMes[mes]) porMes[mes] = [];
+    porMes[mes].push(mov);
+  });
+
+  for (const mes in porMes) {
+    const bloco = document.createElement("div");
+    bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
+
+    porMes[mes].forEach((mov) => {
+      let texto = "";
+
+      if (mov.tipo === "entrada") {
+        texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
+      } else {
+        texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
+      }
+
+      const linha = document.createElement("p");
+      linha.className = "text-gray-700 dark:text-gray-300";
+      linha.textContent = `${mov.data.toLocaleDateString("pt-BR")} - `;
+      linha.innerHTML += texto;
+
+      bloco.appendChild(linha);
+    });
+
+    historicoEl.appendChild(bloco);
+  }
+}
+
