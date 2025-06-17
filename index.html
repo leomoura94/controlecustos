@@ -6,66 +6,96 @@
   <title>Controle de Gastos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body, html {
+      height: 100%;
+    }
+    /* Centralizar tudo vertical e horizontalmente */
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    /* Centralizar formulários e seções */
+    form, section, div#limite-container {
+      max-width: 700px;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    form input, form select, form button, #limite-container input, #limite-container button {
+      flex: 1 1 140px;
+      min-width: 140px;
+    }
+    #historico > div {
+      text-align: center;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-  <div class="min-h-screen flex flex-col items-center p-4">
-    <h1 class="text-3xl font-bold mb-4">Controle de Gastos</h1>
+  <div class="container">
+    <h1 class="text-3xl font-bold mb-6 text-center w-full">Controle de Gastos</h1>
 
     <!-- Formulário de gasto -->
-    <form id="gastoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6 items-center justify-center">
-      <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+    <form id="gastoForm" class="items-center">
+      <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" aria-label="Quem gastou">
         <option value="Leonardo">Leonardo</option>
         <option value="Camila">Camila</option>
       </select>
-      <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+      <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required aria-label="Valor do gasto" />
+      <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required aria-label="Categoria do gasto" />
+      <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" aria-label="Tipo de pagamento">
         <option value="pix">Pix</option>
         <option value="debito">Débito</option>
         <option value="credito">Crédito</option>
       </select>
-      <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition">
+      <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition" aria-label="Adicionar gasto">
         Adicionar Gasto
       </button>
     </form>
 
     <!-- Formulário de saldo -->
-    <form id="saldoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 items-center justify-center">
-      <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition">
+    <form id="saldoForm" class="items-center">
+      <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required aria-label="Valor a adicionar" />
+      <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required aria-label="Descrição do saldo" />
+      <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition" aria-label="Adicionar saldo">
         Adicionar Saldo
       </button>
     </form>
 
     <!-- Limite mensal -->
-    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 flex items-center gap-4">
-      <label for="limiteMensal" class="font-semibold">Limite Mensal de Gastos (R$):</label>
-      <input type="number" step="0.01" id="limiteMensal" class="p-2 rounded-xl border dark:bg-gray-800 dark:border-gray-700" placeholder="Ex: 1000" />
-      <button id="definirLimiteBtn" class="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition">Definir Limite</button>
+    <div id="limite-container" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow items-center">
+      <input type="number" step="0.01" id="limiteMensal" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" placeholder="Limite Mensal de Gastos (R$)" aria-label="Limite mensal de gastos" />
+      <button id="definirLimiteBtn" class="bg-yellow-500 text-white px-6 py-3 rounded-xl hover:bg-yellow-600 transition" aria-label="Definir limite mensal">Definir Limite</button>
     </div>
 
     <!-- Mensagem de alerta -->
-    <div id="alertaLimite" class="w-full max-w-3xl p-4 rounded-xl mb-6 hidden"></div>
+    <div id="alertaLimite" class="w-full max-w-3xl p-4 rounded-xl mb-6 hidden text-center font-semibold"></div>
 
     <!-- Saldo geral e individual -->
-    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 flex justify-between flex-wrap gap-4">
-      <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
-      <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
-      <p>Saldo Leonardo: <span id="saldoLeonardo">R$ 0,00</span></p>
-      <p>Saldo Camila: <span id="saldoCamila">R$ 0,00</span></p>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 flex justify-around flex-wrap gap-6 max-w-3xl w-full text-center">
+      <p>Saldo no banco: <span id="saldoBanco" class="font-bold">R$ 0,00</span></p>
+      <p>Total gasto: <span id="totalGasto" class="font-bold">R$ 0,00</span></p>
+      <p>Saldo Leonardo: <span id="saldoLeonardo" class="font-bold">R$ 0,00</span></p>
+      <p>Saldo Camila: <span id="saldoCamila" class="font-bold">R$ 0,00</span></p>
     </div>
 
     <!-- Gráfico -->
-    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 max-w-3xl w-full">
       <canvas id="graficoGastos" width="400" height="200"></canvas>
     </div>
 
     <!-- Histórico -->
-    <section class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+    <section class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow max-w-3xl w-full">
       <h2 class="font-semibold mb-4 flex justify-between items-center">
         <span>📜 Histórico de Movimentações</span>
-        <button id="exportarCSV" class="bg-indigo-600 text-white px-3 py-1 rounded-xl hover:bg-indigo-700 transition text-sm">Exportar CSV</button>
+        <button id="exportarCSV" class="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition text-sm" aria-label="Exportar histórico CSV">Exportar CSV</button>
       </h2>
       <div id="historico" class="space-y-4 max-h-[300px] overflow-y-auto text-sm"></div>
     </section>
@@ -74,9 +104,8 @@
   <script>
     let gastos = [];
     let entradas = [];
-    let limiteMensal = null; // em reais
+    let limiteMensal = null;
 
-    // Tenta carregar do localStorage
     if (localStorage.getItem("gastos")) gastos = JSON.parse(localStorage.getItem("gastos"));
     if (localStorage.getItem("entradas")) entradas = JSON.parse(localStorage.getItem("entradas"));
     if (localStorage.getItem("limiteMensal")) limiteMensal = parseFloat(localStorage.getItem("limiteMensal"));
@@ -103,11 +132,8 @@
       const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
       const saldoAtual = totalEntradas - totalGastos;
 
-      // Saldo individual (entradas - gastos) por pessoa
       const totalGastosLeonardo = gastos.filter(g => g.quem === "Leonardo").reduce((acc, g) => acc + g.valor, 0);
       const totalGastosCamila = gastos.filter(g => g.quem === "Camila").reduce((acc, g) => acc + g.valor, 0);
-      // Para entradas, assumimos que é receita para ambos — dividir igualmente ou customizar?  
-      // Vou dividir as entradas igualmente para simplificar
       const totalEntradasPorPessoa = totalEntradas / 2;
       const saldoLeonardo = totalEntradasPorPessoa - totalGastosLeonardo;
       const saldoCamila = totalEntradasPorPessoa - totalGastosCamila;
@@ -115,7 +141,6 @@
       return { totalEntradas, totalGastos, saldoAtual, saldoLeonardo, saldoCamila };
     }
 
-    // Configuração do gráfico
     let grafico = new Chart(ctx, {
       type: "doughnut",
       data: {
@@ -159,10 +184,10 @@
       if (limiteMensal !== null) {
         if (totalGastos > limiteMensal) {
           alertaLimiteEl.textContent = `⚠️ Você ultrapassou o limite mensal de gastos: ${formatarMoeda(limiteMensal)}`;
-          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-red-600 text-white font-semibold";
+          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-red-600 text-white font-semibold text-center";
         } else {
           alertaLimiteEl.textContent = `✅ Você está dentro do limite mensal de gastos: ${formatarMoeda(limiteMensal)}`;
-          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-green-600 text-white font-semibold";
+          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-green-600 text-white font-semibold text-center";
         }
       } else {
         alertaLimiteEl.textContent = "";
@@ -207,7 +232,6 @@
       atualizarPainel();
     });
 
-    // Renderiza o histórico com botões para apagar
     function renderizarHistorico() {
       historicoEl.innerHTML = "";
 
@@ -248,16 +272,16 @@
           let texto = "";
 
           if (mov.tipo === "entrada") {
-            texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
+            texto = `<span class="text-green-500 font-semibold">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
           } else {
-            texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
+            texto = `<span class="text-red-500 font-semibold">- ${formatarMoeda(mov.valor)}</span> – <strong>${mov.quem}</strong> | ${mov.categoria} (${mov.pagamento})`;
           }
 
           const linha = document.createElement("div");
           linha.className = "flex justify-between items-center text-gray-700 dark:text-gray-300 mb-1";
           linha.innerHTML = `
             <div>${mov.data.toLocaleDateString("pt-BR")} - ${texto}</div>
-            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-600 font-bold px-2" data-id="${mov.id}" data-tipo="${mov.tipo}">Excluir</button>
+            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-600 font-bold px-2" data-id="${mov.id}" data-tipo="${mov.tipo}" aria-label="Excluir movimentação">Excluir</button>
           `;
           bloco.appendChild(linha);
         });
@@ -265,7 +289,6 @@
         historicoEl.appendChild(bloco);
       }
 
-      // Adicionar evento para os botões de excluir
       historicoEl.querySelectorAll("button").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           const id = Number(e.target.dataset.id);
@@ -281,7 +304,6 @@
       });
     }
 
-    // Exportar CSV
     function exportarCSV() {
       const csvHeader = ['Tipo', 'Quem/Descrição', 'Valor', 'Categoria', 'Pagamento', 'Data'];
       const rows = [];
@@ -332,7 +354,6 @@
 
     exportarCSVBtn.addEventListener("click", exportarCSV);
 
-    // Definir limite mensal
     function definirLimite() {
       const valor = parseFloat(limiteInput.value);
       if (isNaN(valor) || valor <= 0) {
@@ -351,12 +372,10 @@
       definirLimite();
     });
 
-    // Inicializa o input do limite com valor salvo
     if (limiteMensal !== null) {
       limiteInput.value = limiteMensal;
     }
 
-    // Inicialização da página
     atualizarPainel();
   </script>
 </body>
