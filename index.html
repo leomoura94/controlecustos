@@ -5,106 +5,90 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Controle de Gastos</title>
 <style>
+  /* Reset básico */
+  * {
+    box-sizing: border-box;
+  }
   html, body {
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f0f0f0;
+    background: #f8f9fa;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #222;
-  }
-  body.dark {
-    background: #1a1a1a;
-    color: #ddd;
   }
   .container {
-    background: white;
-    padding: 20px 30px;
-    border-radius: 10px;
     width: 400px;
-    max-width: 95vw;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  body.dark .container {
-    background: #333;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    background: white;
+    border-radius: 8px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
   }
   h1 {
     margin-bottom: 20px;
-    text-align: center;
+    font-weight: 700;
+    color: #333;
   }
   form {
-    width: 100%;
     margin-bottom: 20px;
   }
   .form-row {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 12px;
   }
-  input, select {
-    flex: 1 1 100px;
-    min-width: 100px;
-    padding: 8px 10px;
+  input[type=number], input[type=text], select {
+    padding: 8px 12px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    box-sizing: border-box;
     font-size: 1rem;
+    flex: 1;
   }
-  body.dark input, body.dark select {
-    background: #555;
-    border-color: #888;
-    color: #ddd;
+  input[type=number] {
+    max-width: 140px;
+  }
+  select {
+    max-width: 120px;
   }
   button {
-    background: #007bff;
+    width: 100%;
+    background-color: #007bff;
     border: none;
     color: white;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
+    padding: 12px;
     font-size: 1rem;
-    padding: 10px 0;
-    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
     transition: background-color 0.3s ease;
   }
   button:hover {
-    background: #0056b3;
+    background-color: #0056b3;
   }
   .resumo {
-    width: 100%;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 1.1rem;
     margin-bottom: 20px;
-    text-align: center;
+    color: #222;
   }
   #historico {
-    width: 100%;
-    max-height: 250px;
+    max-height: 220px;
     overflow-y: auto;
-    background: #fafafa;
+    text-align: left;
+    background: #f1f3f5;
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 0.9rem;
-    color: #333;
-  }
-  body.dark #historico {
-    background: #444;
-    border-color: #666;
-    color: #ddd;
+    color: #444;
   }
   #historico h3 {
     margin-top: 15px;
-    margin-bottom: 6px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: capitalize;
   }
   #historico p {
     margin: 3px 0;
@@ -117,30 +101,30 @@
   }
   #btnReset {
     margin-top: 10px;
-    background: #dc3545;
+    background-color: #dc3545;
   }
   #btnReset:hover {
-    background: #a71d2a;
+    background-color: #a71d2a;
   }
 </style>
 </head>
-<body class="dark">
+<body>
   <div class="container">
     <h1>Controle de Gastos</h1>
 
-    <!-- Formulário para adicionar gasto -->
+    <!-- Form para adicionar gasto -->
     <form id="gastoForm">
       <div class="form-row">
-        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" required min="0.01" />
-        <select id="quem" required>
+        <input type="number" id="valorGasto" placeholder="Valor (R$)" min="0.01" step="0.01" required />
+        <select id="quemGastou" required>
           <option value="" disabled selected>Quem gastou?</option>
           <option value="Leonardo">Leonardo</option>
           <option value="Camila">Camila</option>
         </select>
       </div>
       <div class="form-row">
-        <input type="text" id="categoria" placeholder="Categoria" required />
-        <select id="tipo" required>
+        <input type="text" id="categoriaGasto" placeholder="Categoria" required />
+        <select id="tipoPagamento" required>
           <option value="pix">Pix</option>
           <option value="debito">Débito</option>
           <option value="credito">Crédito</option>
@@ -149,29 +133,27 @@
       <button type="submit">Adicionar Gasto</button>
     </form>
 
-    <!-- Formulário para adicionar saldo -->
+    <!-- Form para adicionar saldo -->
     <form id="saldoForm">
       <div class="form-row">
-        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" required min="0.01" />
+        <input type="number" id="valorSaldo" placeholder="Valor a adicionar (R$)" min="0.01" step="0.01" required />
         <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" required />
       </div>
       <button type="submit">Adicionar Saldo</button>
     </form>
 
-    <!-- Resumo -->
     <div class="resumo">
       <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
       <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
     </div>
 
-    <!-- Histórico -->
     <div id="historico" aria-live="polite" aria-label="Histórico de movimentações"></div>
 
     <button id="btnReset">Zerar Tudo</button>
   </div>
 
 <script>
-  // Pegar dados do localStorage ou iniciar vazios
+  // Pega dados do localStorage ou cria vazio
   let gastos = JSON.parse(localStorage.getItem('gastos')) || [];
   let entradas = JSON.parse(localStorage.getItem('entradas')) || [];
 
@@ -182,19 +164,22 @@
   const historicoEl = document.getElementById('historico');
   const btnReset = document.getElementById('btnReset');
 
+  // Formata número para moeda BRL
   function formatarMoeda(valor) {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return valor.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
   }
 
+  // Calcula totais para saldo e gastos
   function calcularTotais() {
     const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
     const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
     const saldoAtual = totalEntradas - totalGastos;
-    return { totalEntradas, totalGastos, saldoAtual };
+    return {totalEntradas, totalGastos, saldoAtual};
   }
 
+  // Atualiza painel: saldo, total gasto, histórico, salva localStorage
   function atualizarPainel() {
-    const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
+    const {totalEntradas, totalGastos, saldoAtual} = calcularTotais();
 
     saldoBancoEl.textContent = formatarMoeda(saldoAtual);
     totalGastoEl.textContent = formatarMoeda(totalGastos);
@@ -205,96 +190,94 @@
     renderizarHistorico();
   }
 
+  // Renderiza histórico agrupado por mês
   function renderizarHistorico() {
     historicoEl.innerHTML = '';
 
-    const todosMovimentos = [
-      ...entradas.map(e => ({
-        tipo: 'entrada',
-        valor: e.valor,
-        descricao: e.descricao,
-        data: new Date(e.data),
-      })),
+    // Junta entradas e gastos, com data como Date()
+    const todosMovs = [
+      ...entradas.map(e => ({tipo:'entrada', valor:e.valor, descricao:e.descricao, data:new Date(e.data)})),
       ...gastos.map(g => ({
-        tipo: 'gasto',
-        quem: g.quem,
-        valor: g.valor,
-        categoria: g.categoria,
-        pagamento: g.tipo,
-        data: new Date(g.data),
+        tipo:'gasto',
+        valor:g.valor,
+        quem:g.quem,
+        categoria:g.categoria,
+        pagamento:g.tipo,
+        data:new Date(g.data)
       }))
     ];
 
-    todosMovimentos.sort((a,b) => b.data - a.data);
+    // Ordena por data decrescente
+    todosMovs.sort((a,b) => b.data - a.data);
 
-    const porMes = {};
-
-    todosMovimentos.forEach(mov => {
-      const mes = mov.data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-      if (!porMes[mes]) porMes[mes] = [];
-      porMes[mes].push(mov);
+    // Agrupa por mês e ano
+    const agrupado = {};
+    todosMovs.forEach(mov => {
+      const mesAno = mov.data.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+      if(!agrupado[mesAno]) agrupado[mesAno] = [];
+      agrupado[mesAno].push(mov);
     });
 
-    for (const mes in porMes) {
-      const bloco = document.createElement('div');
-      bloco.innerHTML = `<h3>${mes.charAt(0).toUpperCase() + mes.slice(1)}</h3>`;
-
-      porMes[mes].forEach(mov => {
+    // Cria elementos do histórico
+    for(const mes in agrupado){
+      const mesDiv = document.createElement('div');
+      mesDiv.innerHTML = `<h3>${mes.charAt(0).toUpperCase()+mes.slice(1)}</h3>`;
+      agrupado[mes].forEach(mov => {
         let texto = '';
-
-        if (mov.tipo === 'entrada') {
+        if(mov.tipo === 'entrada'){
           texto = `<span class="entrada">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
         } else {
           texto = `<span class="gasto">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
         }
-
-        const linha = document.createElement('p');
-        linha.innerHTML = `${mov.data.toLocaleDateString('pt-BR')} - ${texto}`;
-        bloco.appendChild(linha);
+        const p = document.createElement('p');
+        p.innerHTML = `${mov.data.toLocaleDateString('pt-BR')} - ${texto}`;
+        mesDiv.appendChild(p);
       });
-
-      historicoEl.appendChild(bloco);
+      historicoEl.appendChild(mesDiv);
     }
   }
 
+  // Eventos formulário gasto
   gastoForm.addEventListener('submit', e => {
     e.preventDefault();
 
-    const valor = parseFloat(document.getElementById('valor').value);
-    const quem = document.getElementById('quem').value;
-    const categoria = document.getElementById('categoria').value.trim();
-    const tipo = document.getElementById('tipo').value;
+    const valor = parseFloat(document.getElementById('valorGasto').value);
+    const quem = document.getElementById('quemGastou').value;
+    const categoria = document.getElementById('categoriaGasto').value.trim();
+    const tipo = document.getElementById('tipoPagamento').value;
 
-    if (!valor || valor <= 0 || categoria === '' || quem === '') {
-      alert('Preencha todos os campos corretamente.');
+    if(!valor || valor <= 0 || !quem || categoria === '') {
+      alert('Preencha todos os campos corretamente para o gasto.');
       return;
     }
 
-    gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
+    gastos.push({valor, quem, categoria, tipo, data: new Date().toISOString()});
 
     gastoForm.reset();
     atualizarPainel();
   });
 
+  // Eventos formulário saldo
   saldoForm.addEventListener('submit', e => {
     e.preventDefault();
 
     const valor = parseFloat(document.getElementById('valorSaldo').value);
     const descricao = document.getElementById('descricaoSaldo').value.trim();
 
-    if (!valor || valor <= 0 || descricao === '') {
-      alert('Preencha todos os campos corretamente.');
+    if(!valor || valor <= 0 || descricao === '') {
+      alert('Preencha todos os campos corretamente para o saldo.');
       return;
     }
 
-    entradas.push({ valor, descricao, data: new Date().toISOString() });
+    entradas.push({valor, descricao, data: new Date().toISOString()});
 
     saldoForm.reset();
     atualizarPainel();
   });
 
+  // Botão resetar tudo
   btnReset.addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja zerar todas as movimentações?')) {
+    if(confirm('Tem certeza que deseja zerar todas as movimentações?')) {
       gastos = [];
       entradas = [];
       localStorage.removeItem('gastos');
@@ -303,7 +286,7 @@
     }
   });
 
-  // Inicializa
+  // Inicializa a tela com dados
   atualizarPainel();
 </script>
 </body>
