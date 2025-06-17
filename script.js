@@ -1,8 +1,7 @@
-let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-let entradas = JSON.parse(localStorage.getItem("entradas")) || [];
+const API_URL = "https://script.google.com/macros/s/AKfycbzM5UAhojXgF8DCHVZdGmPKs8ku3jeZ0EhxI5TJoCJu7UPh_b1YQF1JbvXxLgQr2JFk/exec";
 
-if (!Array.isArray(gastos)) gastos = [];
-if (!Array.isArray(entradas)) entradas = [];
+let gastos = [];
+let entradas = [];
 
 const form = document.getElementById("gastoForm");
 const saldoForm = document.getElementById("saldoForm");
@@ -13,22 +12,33 @@ const historicoEl = document.getElementById("historico");
 const ctx = document.getElementById("graficoGastos").getContext("2d");
 
 function formatarMoeda(valor) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  return Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+async function carregarDados() {
+  const [dadosGastos, dadosEntradas] = await Promise.all([
+    fetch(`${API_URL}?tipo=gastos`).then(r => r.json()),
+    fetch(`${API_URL}?tipo=entradas`).then(r => r.json())
+  ]);
+  gastos = dadosGastos.map(g => ({ ...g, valor: parseFloat(g.valor), data: new Date(g.data) }));
+  entradas = dadosEntradas.map(e => ({ ...e, valor: parseFloat(e.valor), data: new Date(e.data) }));
+  atualizarPainel();
 }
 
 function calcularTotais() {
   const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
   const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
-  const saldoAtual = totalEntradas - totalGastos;
-  return { totalEntradas, totalGastos, saldoAtual };
+  return {
+    totalEntradas,
+    totalGastos,
+    saldoAtual: totalEntradas - totalGastos
+  };
 }
 
 function atualizarPainel() {
   const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
   saldoBancoEl.textContent = formatarMoeda(saldoAtual);
   totalGastoEl.textContent = formatarMoeda(totalGastos);
-  localStorage.setItem("gastos", JSON.stringify(gastos));
-  localStorage.setItem("entradas", JSON.stringify(entradas));
   atualizarGrafico();
   renderizarHistorico();
 }
@@ -52,7 +62,7 @@ let grafico = new Chart(ctx, {
 
 function atualizarGrafico() {
   const categorias = {};
-  gastos.forEach((g) => {
+  gastos.forEach(g => {
     categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
   });
   grafico.data.labels = Object.keys(categorias);
@@ -62,14 +72,10 @@ function atualizarGrafico() {
 
 function renderizarHistorico() {
   historicoEl.innerHTML = "";
-  const todosMovimentos = [
-    ...entradas.map((e) => ({ tipo: "entrada", quem: e.quem, valor: e.valor, descricao: e.descricao, data: new Date(e.data) })),
-    ...gastos.map((g) => ({ tipo: "gasto", quem: g.quem, valor: g.valor, categoria: g.categoria, pagamento: g.tipo, data: new Date(g.data) })),
-  ];
-  todosMovimentos.sort((a, b) => b.data - a.data);
+  const todos = [...entradas, ...gastos].sort((a, b) => b.data - a.data);
   const porMes = {};
 
-  todosMovimentos.forEach((mov) => {
+  todos.forEach(mov => {
     const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
     if (!porMes[mes]) porMes[mes] = [];
     porMes[mes].push(mov);
@@ -78,13 +84,10 @@ function renderizarHistorico() {
   for (const mes in porMes) {
     const bloco = document.createElement("div");
     bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
-    porMes[mes].forEach((mov) => {
-      let texto = "";
-      if (mov.tipo === "entrada") {
-        texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.descricao}`;
-      } else {
-        texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
-      }
+    porMes[mes].forEach(mov => {
+      const texto = mov.descricao
+        ? `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.descricao}`
+        : `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.tipo})`;
       const linha = document.createElement("p");
       linha.className = "text-gray-300";
       linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
@@ -94,36 +97,39 @@ function renderizarHistorico() {
   }
 }
 
-form.addEventListener("submit", (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const quem = document.getElementById("quem").value;
   const valor = parseFloat(document.getElementById("valor").value);
-  const categoria = document.getElementById("categoria").value.trim();
+  const categoria = document.getElementById("categoria").value;
   const tipo = document.getElementById("tipo").value;
-  if (!valor || valor <= 0 || categoria === "") return alert("Preencha corretamente.");
-  gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
+  if (!valor || valor <= 0 || !categoria) return alert("Preencha corretamente.");
+  const gasto = { quem, valor, categoria, tipo, data: new Date().toISOString() };
+  await fetch(`${API_URL}?tipo=gastos`, {
+    method: "POST",
+    body: JSON.stringify(gasto)
+  });
   form.reset();
-  atualizarPainel();
+  carregarDados();
 });
 
-saldoForm.addEventListener("submit", (e) => {
+saldoForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const quem = document.getElementById("quemSaldo").value;
   const valor = parseFloat(document.getElementById("valorSaldo").value);
   const descricao = document.getElementById("descricaoSaldo").value.trim();
   if (!valor || valor <= 0 || descricao === "") return alert("Preencha corretamente.");
-  entradas.push({ quem, valor, descricao, data: new Date().toISOString() });
+  const entrada = { quem, valor, descricao, data: new Date().toISOString() };
+  await fetch(`${API_URL}?tipo=entradas`, {
+    method: "POST",
+    body: JSON.stringify(entrada)
+  });
   saldoForm.reset();
-  atualizarPainel();
+  carregarDados();
 });
 
 resetarBtn.addEventListener("click", () => {
-  if (confirm("Tem certeza que deseja resetar tudo?")) {
-    gastos = [];
-    entradas = [];
-    localStorage.clear();
-    atualizarPainel();
-  }
+  alert("Resetar tudo com Google Sheets não é automático.\nVocê precisa limpar os dados manualmente na planilha.");
 });
 
 function exportarDados() {
@@ -137,4 +143,4 @@ function exportarDados() {
   URL.revokeObjectURL(url);
 }
 
-atualizarPainel();
+carregarDados();
