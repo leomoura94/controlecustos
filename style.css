@@ -51,3 +51,8 @@
 .btn-vermelho:hover {
   background-color: #b91c1c;
 }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
