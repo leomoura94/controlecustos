@@ -1,4 +1,3 @@
-
 let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
 let entradas = JSON.parse(localStorage.getItem("entradas")) || [];
 
@@ -156,18 +155,11 @@ function exportarCSV() {
   const link = document.createElement("a");
   link.href = url;
   link.download = "controle-de-gastos.csv";
-  document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
 
 function exportarExcel() {
-  if (typeof XLSX === "undefined") {
-    alert("Biblioteca Excel não carregada!");
-    return;
-  }
-
   const dados = [];
   dados.push(["Tipo", "Quem", "Valor", "Descrição/Categoria", "Forma de Pagamento", "Data"]);
 
@@ -182,6 +174,7 @@ function exportarExcel() {
   const ws = XLSX.utils.aoa_to_sheet(dados);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Movimentações");
+
   XLSX.writeFile(wb, "controle-de-gastos.xlsx");
 }
 
