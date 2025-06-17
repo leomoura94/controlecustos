@@ -23,7 +23,7 @@
           <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required />
           <select id="categoria" class="campo" required>
             <option value="" disabled selected>Categoria</option>
-            <option>Condomínio</option>
+           <option>Condomínio</option>
             <option>IPTU</option>
             <option>Minha Casa Minha Vida</option>
             <option>Fatura Cartão de Crédito</option>
@@ -104,10 +104,12 @@
 
         <!-- Botões -->
         <div class="flex flex-wrap gap-4">
-          <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
+          <input type="file" id="importarArquivo" class="hidden" accept=".json,.csv,.xlsx" />
+          <button onclick="document.getElementById('importarArquivo').click()" class="btn-azul">📂 Importar Planilha</button>
           <button onclick="exportarDados()" class="btn-azul">⬇️ Exportar JSON</button>
           <button onclick="exportarCSV()" class="btn-azul">⬇️ Exportar CSV</button>
           <button onclick="exportarExcel()" class="btn-azul">⬇️ Exportar Excel</button>
+          <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
         </div>
       </div>
     </div>
