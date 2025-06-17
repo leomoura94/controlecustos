@@ -1,72 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suporte Axtro Tech</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        input[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 20px;
-            background-color: #0288d1;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #0277bd;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat de Gastos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Suporte de Atendimento TI - Axtro Tech</h1>
-        <form action="mailto:suporte@axtrotech.com" method="POST" enctype="text/plain">
-            <label for="name">Seu Nome:</label>
-            <input type="text" id="name" name="Nome" required>
-
-            <label for="company">Empresa:</label>
-            <input type="text" id="company" name="Empresa" required>
-
-            <label for="issue">Descreva o problema:</label>
-            <textarea id="issue" name="Descrição" rows="4" required></textarea>
-
-            <input type="submit" value="Enviar">
-        </form>
+  <div class="chat-container">
+    <div class="chat-log" id="chat-log"></div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Ex: Gastei 100 no débito no mercado (Leonardo)" />
+      <button onclick="processInput()">Enviar</button>
     </div>
+    <div class="resumo" id="resumo"></div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
