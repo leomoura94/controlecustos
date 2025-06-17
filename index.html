@@ -1,216 +1,363 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Controle de Gastos</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-    <div class="min-h-screen flex flex-col items-center p-4">
-      <h1 class="text-3xl font-bold mb-4">Controle de Gastos</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle de Gastos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div class="min-h-screen flex flex-col items-center p-4">
+    <h1 class="text-3xl font-bold mb-4">Controle de Gastos</h1>
 
-      <form id="gastoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-        <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
-          <option value="Leonardo">Leonardo</option>
-          <option value="Camila">Camila</option>
-        </select>
-        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-        <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-        <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
-          <option value="pix">Pix</option>
-          <option value="debito">Débito</option>
-          <option value="credito">Crédito</option>
-        </select>
-        <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition col-span-1 sm:col-span-1">
-          Adicionar Gasto
-        </button>
-      </form>
+    <!-- Formulário de gasto -->
+    <form id="gastoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6 items-center justify-center">
+      <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+        <option value="Leonardo">Leonardo</option>
+        <option value="Camila">Camila</option>
+      </select>
+      <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+      <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+      <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+        <option value="pix">Pix</option>
+        <option value="debito">Débito</option>
+        <option value="credito">Crédito</option>
+      </select>
+      <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition">
+        Adicionar Gasto
+      </button>
+    </form>
 
-      <form id="saldoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-        <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition col-span-1 sm:col-span-1">
-          Adicionar Saldo
-        </button>
-      </form>
+    <!-- Formulário de saldo -->
+    <form id="saldoForm" class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 items-center justify-center">
+      <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+      <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+      <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition">
+        Adicionar Saldo
+      </button>
+    </form>
 
-      <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
-        <h2 class="font-semibold mb-2">Resumo</h2>
-        <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
-        <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
-      </div>
-
-      <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
-        <canvas id="graficoGastos" width="400" height="200"></canvas>
-      </div>
-
-      <section class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
-        <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
-        <div id="historico" class="space-y-4 max-h-[300px] overflow-y-auto text-sm"></div>
-      </section>
+    <!-- Limite mensal -->
+    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 flex items-center gap-4">
+      <label for="limiteMensal" class="font-semibold">Limite Mensal de Gastos (R$):</label>
+      <input type="number" step="0.01" id="limiteMensal" class="p-2 rounded-xl border dark:bg-gray-800 dark:border-gray-700" placeholder="Ex: 1000" />
+      <button id="definirLimiteBtn" class="bg-yellow-500 text-white px-4 py-2 rounded-xl hover:bg-yellow-600 transition">Definir Limite</button>
     </div>
 
-    <script>
-      let gastos = [];
-      let entradas = [];
+    <!-- Mensagem de alerta -->
+    <div id="alertaLimite" class="w-full max-w-3xl p-4 rounded-xl mb-6 hidden"></div>
 
-      if (localStorage.getItem("gastos")) gastos = JSON.parse(localStorage.getItem("gastos"));
-      if (localStorage.getItem("entradas")) entradas = JSON.parse(localStorage.getItem("entradas"));
+    <!-- Saldo geral e individual -->
+    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 flex justify-between flex-wrap gap-4">
+      <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
+      <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
+      <p>Saldo Leonardo: <span id="saldoLeonardo">R$ 0,00</span></p>
+      <p>Saldo Camila: <span id="saldoCamila">R$ 0,00</span></p>
+    </div>
 
-      const form = document.getElementById("gastoForm");
-      const saldoForm = document.getElementById("saldoForm");
-      const saldoBancoEl = document.getElementById("saldoBanco");
-      const totalGastoEl = document.getElementById("totalGasto");
-      const historicoEl = document.getElementById("historico");
-      const ctx = document.getElementById("graficoGastos").getContext("2d");
+    <!-- Gráfico -->
+    <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+      <canvas id="graficoGastos" width="400" height="200"></canvas>
+    </div>
 
-      function formatarMoeda(valor) {
-        return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-      }
+    <!-- Histórico -->
+    <section class="w-full max-w-3xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+      <h2 class="font-semibold mb-4 flex justify-between items-center">
+        <span>📜 Histórico de Movimentações</span>
+        <button id="exportarCSV" class="bg-indigo-600 text-white px-3 py-1 rounded-xl hover:bg-indigo-700 transition text-sm">Exportar CSV</button>
+      </h2>
+      <div id="historico" class="space-y-4 max-h-[300px] overflow-y-auto text-sm"></div>
+    </section>
+  </div>
 
-      function calcularTotais() {
-        const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
-        const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
-        const saldoAtual = totalEntradas - totalGastos;
-        return { totalEntradas, totalGastos, saldoAtual };
-      }
+  <script>
+    let gastos = [];
+    let entradas = [];
+    let limiteMensal = null; // em reais
 
-      function atualizarPainel() {
-        const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
+    // Tenta carregar do localStorage
+    if (localStorage.getItem("gastos")) gastos = JSON.parse(localStorage.getItem("gastos"));
+    if (localStorage.getItem("entradas")) entradas = JSON.parse(localStorage.getItem("entradas"));
+    if (localStorage.getItem("limiteMensal")) limiteMensal = parseFloat(localStorage.getItem("limiteMensal"));
 
-        saldoBancoEl.textContent = formatarMoeda(saldoAtual);
-        totalGastoEl.textContent = formatarMoeda(totalGastos);
+    const form = document.getElementById("gastoForm");
+    const saldoForm = document.getElementById("saldoForm");
+    const saldoBancoEl = document.getElementById("saldoBanco");
+    const totalGastoEl = document.getElementById("totalGasto");
+    const saldoLeonardoEl = document.getElementById("saldoLeonardo");
+    const saldoCamilaEl = document.getElementById("saldoCamila");
+    const historicoEl = document.getElementById("historico");
+    const ctx = document.getElementById("graficoGastos").getContext("2d");
+    const alertaLimiteEl = document.getElementById("alertaLimite");
+    const limiteInput = document.getElementById("limiteMensal");
+    const definirLimiteBtn = document.getElementById("definirLimiteBtn");
+    const exportarCSVBtn = document.getElementById("exportarCSV");
 
-        localStorage.setItem("gastos", JSON.stringify(gastos));
-        localStorage.setItem("entradas", JSON.stringify(entradas));
+    function formatarMoeda(valor) {
+      return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    }
 
-        atualizarGrafico();
-        renderizarHistorico();
-      }
+    function calcularTotais() {
+      const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
+      const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
+      const saldoAtual = totalEntradas - totalGastos;
 
-      let grafico = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: [],
-          datasets: [
-            {
-              label: "Gastos por Categoria",
-              data: [],
-              backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185"],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              labels: { color: "#ccc" },
-            },
-          },
-        },
-      });
+      // Saldo individual (entradas - gastos) por pessoa
+      const totalGastosLeonardo = gastos.filter(g => g.quem === "Leonardo").reduce((acc, g) => acc + g.valor, 0);
+      const totalGastosCamila = gastos.filter(g => g.quem === "Camila").reduce((acc, g) => acc + g.valor, 0);
+      // Para entradas, assumimos que é receita para ambos — dividir igualmente ou customizar?  
+      // Vou dividir as entradas igualmente para simplificar
+      const totalEntradasPorPessoa = totalEntradas / 2;
+      const saldoLeonardo = totalEntradasPorPessoa - totalGastosLeonardo;
+      const saldoCamila = totalEntradasPorPessoa - totalGastosCamila;
 
-      function atualizarGrafico() {
-        const categorias = {};
-        gastos.forEach((g) => {
-          categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
-        });
+      return { totalEntradas, totalGastos, saldoAtual, saldoLeonardo, saldoCamila };
+    }
 
-        grafico.data.labels = Object.keys(categorias);
-        grafico.data.datasets[0].data = Object.values(categorias);
-        grafico.update();
-      }
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const quem = document.getElementById("quem").value;
-        const valor = parseFloat(document.getElementById("valor").value);
-        const categoria = document.getElementById("categoria").value.trim();
-        const tipo = document.getElementById("tipo").value;
-
-        if (!valor || valor <= 0 || categoria === "") {
-          alert("Preencha os campos corretamente.");
-          return;
-        }
-
-        gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
-        form.reset();
-        atualizarPainel();
-      });
-
-      saldoForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const valor = parseFloat(document.getElementById("valorSaldo").value);
-        const descricao = document.getElementById("descricaoSaldo").value.trim();
-
-        if (!valor || valor <= 0 || descricao === "") {
-          alert("Preencha os campos corretamente.");
-          return;
-        }
-
-        entradas.push({ valor, descricao, data: new Date().toISOString() });
-        saldoForm.reset();
-        atualizarPainel();
-      });
-
-      function renderizarHistorico() {
-        historicoEl.innerHTML = "";
-
-        const todosMovimentos = [
-          ...entradas.map((e) => ({
-            tipo: "entrada",
-            valor: e.valor,
-            descricao: e.descricao,
-            data: new Date(e.data),
-          })),
-          ...gastos.map((g) => ({
-            tipo: "gasto",
-            quem: g.quem,
-            valor: g.valor,
-            categoria: g.categoria,
-            pagamento: g.tipo,
-            data: new Date(g.data),
-          })),
-        ];
-
-        todosMovimentos.sort((a, b) => b.data - a.data);
-
-        const porMes = {};
-
-        todosMovimentos.forEach((mov) => {
-          const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-          if (!porMes[mes]) porMes[mes] = [];
-          porMes[mes].push(mov);
-        });
-
-        for (const mes in porMes) {
-          const bloco = document.createElement("div");
-          bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
-
-          porMes[mes].forEach((mov) => {
-            let texto = "";
-
-            if (mov.tipo === "entrada") {
-              texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
-            } else {
-              texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
-            }
-
-            const linha = document.createElement("p");
-            linha.className = "text-gray-700 dark:text-gray-300";
-            linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
-            bloco.appendChild(linha);
-          });
-
-          historicoEl.appendChild(bloco);
+    // Configuração do gráfico
+    let grafico = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: [],
+        datasets: [{
+          label: "Gastos por Categoria",
+          data: [],
+          backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185", "#f59e0b", "#10b981", "#3b82f6"],
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: "#ccc" } }
         }
       }
+    });
 
+    function atualizarGrafico() {
+      const categorias = {};
+      gastos.forEach(g => {
+        categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
+      });
+
+      grafico.data.labels = Object.keys(categorias);
+      grafico.data.datasets[0].data = Object.values(categorias);
+      grafico.update();
+    }
+
+    function atualizarPainel() {
+      const { totalEntradas, totalGastos, saldoAtual, saldoLeonardo, saldoCamila } = calcularTotais();
+
+      saldoBancoEl.textContent = formatarMoeda(saldoAtual);
+      totalGastoEl.textContent = formatarMoeda(totalGastos);
+      saldoLeonardoEl.textContent = formatarMoeda(saldoLeonardo);
+      saldoCamilaEl.textContent = formatarMoeda(saldoCamila);
+
+      localStorage.setItem("gastos", JSON.stringify(gastos));
+      localStorage.setItem("entradas", JSON.stringify(entradas));
+
+      if (limiteMensal !== null) {
+        if (totalGastos > limiteMensal) {
+          alertaLimiteEl.textContent = `⚠️ Você ultrapassou o limite mensal de gastos: ${formatarMoeda(limiteMensal)}`;
+          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-red-600 text-white font-semibold";
+        } else {
+          alertaLimiteEl.textContent = `✅ Você está dentro do limite mensal de gastos: ${formatarMoeda(limiteMensal)}`;
+          alertaLimiteEl.className = "w-full max-w-3xl p-4 rounded-xl mb-6 bg-green-600 text-white font-semibold";
+        }
+      } else {
+        alertaLimiteEl.textContent = "";
+        alertaLimiteEl.className = "hidden";
+      }
+
+      atualizarGrafico();
+      renderizarHistorico();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const quem = document.getElementById("quem").value;
+      const valor = parseFloat(document.getElementById("valor").value);
+      const categoria = document.getElementById("categoria").value.trim();
+      const tipo = document.getElementById("tipo").value;
+
+      if (!valor || valor <= 0 || categoria === "") {
+        alert("Preencha os campos corretamente.");
+        return;
+      }
+
+      gastos.push({ id: Date.now(), quem, valor, categoria, tipo, data: new Date().toISOString() });
+      form.reset();
       atualizarPainel();
-    </script>
-  </body>
+    });
+
+    saldoForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const valor = parseFloat(document.getElementById("valorSaldo").value);
+      const descricao = document.getElementById("descricaoSaldo").value.trim();
+
+      if (!valor || valor <= 0 || descricao === "") {
+        alert("Preencha os campos corretamente.");
+        return;
+      }
+
+      entradas.push({ id: Date.now(), valor, descricao, data: new Date().toISOString() });
+      saldoForm.reset();
+      atualizarPainel();
+    });
+
+    // Renderiza o histórico com botões para apagar
+    function renderizarHistorico() {
+      historicoEl.innerHTML = "";
+
+      const todosMovimentos = [
+        ...entradas.map((e) => ({
+          id: e.id,
+          tipo: "entrada",
+          valor: e.valor,
+          descricao: e.descricao,
+          data: new Date(e.data),
+        })),
+        ...gastos.map((g) => ({
+          id: g.id,
+          tipo: "gasto",
+          quem: g.quem,
+          valor: g.valor,
+          categoria: g.categoria,
+          pagamento: g.tipo,
+          data: new Date(g.data),
+        })),
+      ];
+
+      todosMovimentos.sort((a, b) => b.data - a.data);
+
+      const porMes = {};
+
+      todosMovimentos.forEach((mov) => {
+        const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+        if (!porMes[mes]) porMes[mes] = [];
+        porMes[mes].push(mov);
+      });
+
+      for (const mes in porMes) {
+        const bloco = document.createElement("div");
+        bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
+
+        porMes[mes].forEach((mov) => {
+          let texto = "";
+
+          if (mov.tipo === "entrada") {
+            texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
+          } else {
+            texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
+          }
+
+          const linha = document.createElement("div");
+          linha.className = "flex justify-between items-center text-gray-700 dark:text-gray-300 mb-1";
+          linha.innerHTML = `
+            <div>${mov.data.toLocaleDateString("pt-BR")} - ${texto}</div>
+            <button class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-600 font-bold px-2" data-id="${mov.id}" data-tipo="${mov.tipo}">Excluir</button>
+          `;
+          bloco.appendChild(linha);
+        });
+
+        historicoEl.appendChild(bloco);
+      }
+
+      // Adicionar evento para os botões de excluir
+      historicoEl.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const id = Number(e.target.dataset.id);
+          const tipo = e.target.dataset.tipo;
+
+          if (tipo === "entrada") {
+            entradas = entradas.filter(e => e.id !== id);
+          } else {
+            gastos = gastos.filter(g => g.id !== id);
+          }
+          atualizarPainel();
+        });
+      });
+    }
+
+    // Exportar CSV
+    function exportarCSV() {
+      const csvHeader = ['Tipo', 'Quem/Descrição', 'Valor', 'Categoria', 'Pagamento', 'Data'];
+      const rows = [];
+
+      const todosMovimentos = [
+        ...entradas.map(e => ({
+          tipo: "Entrada",
+          quemDescricao: e.descricao,
+          valor: e.valor,
+          categoria: '',
+          pagamento: '',
+          data: new Date(e.data).toLocaleDateString("pt-BR"),
+        })),
+        ...gastos.map(g => ({
+          tipo: "Gasto",
+          quemDescricao: g.quem,
+          valor: g.valor,
+          categoria: g.categoria,
+          pagamento: g.tipo,
+          data: new Date(g.data).toLocaleDateString("pt-BR"),
+        })),
+      ];
+
+      todosMovimentos.forEach(mov => {
+        rows.push([
+          mov.tipo,
+          mov.quemDescricao,
+          mov.valor.toFixed(2).replace('.', ','),
+          mov.categoria,
+          mov.pagamento,
+          mov.data,
+        ].join(';'));
+      });
+
+      const csvContent = [csvHeader.join(';'), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "historico_gastos.csv");
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    exportarCSVBtn.addEventListener("click", exportarCSV);
+
+    // Definir limite mensal
+    function definirLimite() {
+      const valor = parseFloat(limiteInput.value);
+      if (isNaN(valor) || valor <= 0) {
+        alert("Informe um valor válido para o limite mensal.");
+        return;
+      }
+      limiteMensal = valor;
+      localStorage.setItem("limiteMensal", limiteMensal.toString());
+      atualizarPainel();
+      limiteInput.value = '';
+      alert("Limite mensal definido com sucesso!");
+    }
+
+    definirLimiteBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      definirLimite();
+    });
+
+    // Inicializa o input do limite com valor salvo
+    if (limiteMensal !== null) {
+      limiteInput.value = limiteMensal;
+    }
+
+    // Inicialização da página
+    atualizarPainel();
+  </script>
+</body>
 </html>
