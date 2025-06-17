@@ -1,39 +1,40 @@
-let saldoInicial = 5000; // você pode alterar aqui o valor inicial
 let gastos = [];
+let entradas = [];
+
+if (localStorage.getItem("gastos")) gastos = JSON.parse(localStorage.getItem("gastos"));
+if (localStorage.getItem("entradas")) entradas = JSON.parse(localStorage.getItem("entradas"));
 
 const form = document.getElementById("gastoForm");
+const saldoForm = document.getElementById("saldoForm");
 const saldoBancoEl = document.getElementById("saldoBanco");
 const totalGastoEl = document.getElementById("totalGasto");
+const historicoEl = document.getElementById("historico");
 const ctx = document.getElementById("graficoGastos").getContext("2d");
 
-// Carregar dados do localStorage
-if (localStorage.getItem("gastos")) {
-  gastos = JSON.parse(localStorage.getItem("gastos"));
-}
-if (localStorage.getItem("saldo")) {
-  saldoInicial = parseFloat(localStorage.getItem("saldo"));
+function formatarMoeda(valor) {
+  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function formatarMoeda(valor) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+function calcularTotais() {
+  const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
+  const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
+  const saldoAtual = totalEntradas - totalGastos;
+  return { totalEntradas, totalGastos, saldoAtual };
 }
 
 function atualizarPainel() {
-  const totalGasto = gastos.reduce((acc, g) => acc + g.valor, 0);
-  const saldoAtual = saldoInicial - totalGasto;
+  const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
 
   saldoBancoEl.textContent = formatarMoeda(saldoAtual);
-  totalGastoEl.textContent = formatarMoeda(totalGasto);
+  totalGastoEl.textContent = formatarMoeda(totalGastos);
+
+  localStorage.setItem("gastos", JSON.stringify(gastos));
+  localStorage.setItem("entradas", JSON.stringify(entradas));
 
   atualizarGrafico();
-  localStorage.setItem("gastos", JSON.stringify(gastos));
-  localStorage.setItem("saldo", saldoInicial.toString());
+  renderizarHistorico();
 }
 
-// Gráfico de categorias
 let grafico = new Chart(ctx, {
   type: "doughnut",
   data: {
@@ -42,9 +43,7 @@ let grafico = new Chart(ctx, {
       {
         label: "Gastos por Categoria",
         data: [],
-        backgroundColor: [
-          "#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185",
-        ],
+        backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185"],
         borderWidth: 1,
       },
     ],
@@ -52,10 +51,10 @@ let grafico = new Chart(ctx, {
   options: {
     plugins: {
       legend: {
-        labels: { color: "#ccc" }
-      }
-    }
-  }
+        labels: { color: "#ccc" },
+      },
+    },
+  },
 });
 
 function atualizarGrafico() {
@@ -83,20 +82,9 @@ form.addEventListener("submit", (e) => {
   }
 
   gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
-
   form.reset();
   atualizarPainel();
 });
-
-atualizarPainel();
-const saldoForm = document.getElementById("saldoForm");
-const historicoEl = document.getElementById("historico");
-
-// Novo array de saldos adicionados (depósitos)
-let entradas = [];
-if (localStorage.getItem("entradas")) {
-  entradas = JSON.parse(localStorage.getItem("entradas"));
-}
 
 saldoForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -110,17 +98,10 @@ saldoForm.addEventListener("submit", (e) => {
   }
 
   entradas.push({ valor, descricao, data: new Date().toISOString() });
-  saldoInicial += valor;
-
-  localStorage.setItem("entradas", JSON.stringify(entradas));
-  localStorage.setItem("saldo", saldoInicial.toString());
-
   saldoForm.reset();
   atualizarPainel();
-  renderizarHistorico();
 });
 
-// Mostra histórico organizado por mês
 function renderizarHistorico() {
   historicoEl.innerHTML = "";
 
@@ -166,9 +147,7 @@ function renderizarHistorico() {
 
       const linha = document.createElement("p");
       linha.className = "text-gray-700 dark:text-gray-300";
-      linha.textContent = `${mov.data.toLocaleDateString("pt-BR")} - `;
-      linha.innerHTML += texto;
-
+      linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
       bloco.appendChild(linha);
     });
 
@@ -176,3 +155,4 @@ function renderizarHistorico() {
   }
 }
 
+atualizarPainel();
