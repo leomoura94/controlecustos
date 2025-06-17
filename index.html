@@ -2,68 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gastos</title>
-  <link href="style.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle de Gastos Firebase</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-  <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-4xl flex flex-col items-center space-y-6">
-      <h1 class="text-3xl font-bold">Controle de Gastos</h1>
+<body>
+  <div class="container">
+    <h1>Controle de Gastos</h1>
 
-      <!-- Adicionar Gasto -->
-      <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4 w-full">
-        <select id="quem" class="campo">
-          <option>Leonardo</option>
-          <option>Camila</option>
-        </select>
-        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required />
-        <input type="text" id="categoria" placeholder="Categoria" class="campo" required />
-        <select id="tipo" class="campo">
-          <option value="pix">Pix</option>
-          <option value="debito">Débito</option>
-          <option value="credito">Crédito</option>
-        </select>
-        <button type="submit" class="btn-verde">Adicionar Gasto</button>
-      </form>
+    <form id="gastoForm">
+      <input type="text" id="descricao" placeholder="Descrição" required />
+      <input type="number" id="valor" placeholder="Valor (R$)" step="0.01" required />
+      <button type="submit">Adicionar</button>
+    </form>
 
-      <!-- Adicionar Saldo -->
-      <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full">
-        <select id="quemSaldo" class="campo">
-          <option>Leonardo</option>
-          <option>Camila</option>
-        </select>
-        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="campo" required />
-        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="campo" required />
-        <button type="submit" class="btn-azul">Adicionar Saldo</button>
-      </form>
+    <h2>Gastos</h2>
+    <ul id="listaGastos"></ul>
 
-      <!-- Resumo -->
-      <div class="caixa w-full">
-        <h2 class="font-semibold mb-2">Resumo</h2>
-        <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
-        <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
-      </div>
+    <h2>Saldo: R$ <span id="saldo">0.00</span></h2>
 
-      <!-- Gráfico -->
-      <div class="caixa w-full">
-        <canvas id="graficoGastos"></canvas>
-      </div>
-
-      <!-- Histórico -->
-      <section class="caixa w-full">
-        <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
-        <div id="historico" class="space-y-2 max-h-[300px] overflow-y-auto text-sm"></div>
-      </section>
-
-      <!-- Botões -->
-      <div class="flex flex-wrap gap-4">
-        <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
-        <button onclick="exportarDados()" class="btn-azul">⬇️ Exportar Histórico</button>
-      </div>
-    </div>
+    <button id="exportarBtn">Exportar JSON</button>
   </div>
 
   <script src="script.js"></script>
