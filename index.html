@@ -1,113 +1,71 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Controle de Gastos</title>
-    <link href="style.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  </head>
-  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-    <div class="min-h-screen flex items-center justify-center p-4">
-      <div class="w-full max-w-4xl flex flex-col items-center space-y-6">
-        <h1 class="text-3xl font-bold">Controle de Gastos</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Gastos</title>
+  <link href="style.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-4xl flex flex-col items-center space-y-6">
+      <h1 class="text-3xl font-bold">Controle de Gastos</h1>
 
-        <!-- Adicionar Gasto -->
-        <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4 w-full">
-          <select id="quem" class="campo">
-            <option>Leonardo</option>
-            <option>Camila</option>
-          </select>
-          <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required />
-          <select id="categoria" class="campo" required>
-            <option value="" disabled selected>Categoria</option>
-            <option>Condomínio</option>
-            <option>IPTU</option>
-            <option>Minha Casa Minha Vida</option>
-            <option>Fatura Cartão de Crédito</option>
-            <option>Luz</option>
-            <option>Gás</option>
-            <option>Internet</option>
-            <option>Academia</option>
-            <option>Dívida (Leo)</option>
-            <option>Celular Camila</option>
-            <option>Celular Leo</option>
-            <option>Faculdade</option>
-            <option>Spotify</option>
-            <option>Streaming</option>
-            <option>Mesada Vó Nilza</option>
-            <option>Diarista</option>
-            <option>Psicólogas</option>
-            <option>Supermercado</option>
-            <option>Combustível</option>
-            <option>Animal de Estimação</option>
-            <option>Farmácia</option>
-            <option>Impostos</option>
-            <option>Supérfluos</option>
-            <option>Almoço (trabalho)</option>
-            <option>Barbearia</option>
-            <option>Estacionamento</option>
-            <option>Gastos Desconhecidos</option>
-            <option>Lavagem do Carro</option>
-            <option>Emergências</option>
-            <option>Presentes</option>
-            <option>Restaurante</option>
-            <option>Roupas e Calçados</option>
-            <option>Conserto de roupa</option>
-            <option>Salão de Beleza I Esteticista</option>
-            <option>Utensílios Domésticos</option>
-            <option>Viagens</option>
-            <option>Aniversário Cami I Leo</option>
-            <option>Uber</option>
-            <option>Saúde</option>
-            <option>Doações</option>
-          </select>
-          <select id="tipo" class="campo">
-            <option value="pix">Pix</option>
-            <option value="debito">Débito</option>
-            <option value="credito">Crédito</option>
-          </select>
-          <button type="submit" class="btn-verde">Adicionar Gasto</button>
-        </form>
+      <!-- Adicionar Gasto -->
+      <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4 w-full">
+        <select id="quem" class="campo">
+          <option>Leonardo</option>
+          <option>Camila</option>
+        </select>
+        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required />
+        <input type="text" id="categoria" placeholder="Categoria" class="campo" required />
+        <select id="tipo" class="campo">
+          <option value="pix">Pix</option>
+          <option value="debito">Débito</option>
+          <option value="credito">Crédito</option>
+        </select>
+        <button type="submit" class="btn-verde">Adicionar Gasto</button>
+      </form>
 
-        <!-- Adicionar Saldo -->
-        <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full">
-          <select id="quemSaldo" class="campo">
-            <option>Leonardo</option>
-            <option>Camila</option>
-          </select>
-          <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="campo" required />
-          <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="campo" required />
-          <button type="submit" class="btn-azul">Adicionar Saldo</button>
-        </form>
+      <!-- Adicionar Saldo -->
+      <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full">
+        <select id="quemSaldo" class="campo">
+          <option>Leonardo</option>
+          <option>Camila</option>
+        </select>
+        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="campo" required />
+        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="campo" required />
+        <button type="submit" class="btn-azul">Adicionar Saldo</button>
+      </form>
 
-        <!-- Resumo -->
-        <div class="caixa w-full">
-          <h2 class="font-semibold mb-2">Resumo</h2>
-          <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
-          <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
-        </div>
+      <!-- Resumo -->
+      <div class="caixa w-full">
+        <h2 class="font-semibold mb-2">Resumo</h2>
+        <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
+        <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
+      </div>
 
-        <!-- Gráfico -->
-        <div class="caixa w-full">
-          <canvas id="graficoGastos"></canvas>
-        </div>
+      <!-- Gráfico -->
+      <div class="caixa w-full">
+        <canvas id="graficoGastos"></canvas>
+      </div>
 
-        <!-- Histórico -->
-        <section class="caixa w-full">
-          <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
-          <div id="historico" class="space-y-2 max-h-[300px] overflow-y-auto text-sm"></div>
-        </section>
+      <!-- Histórico -->
+      <section class="caixa w-full">
+        <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
+        <div id="historico" class="space-y-2 max-h-[300px] overflow-y-auto text-sm"></div>
+      </section>
 
-        <!-- Botões -->
-        <div class="flex flex-wrap gap-4">
-          <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
-          <button onclick="exportarDados()" class="btn-azul">⬇️ Exportar Histórico</button>
-        </div>
+      <!-- Botões -->
+      <div class="flex flex-wrap gap-4">
+        <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
+        <button onclick="exportarDados()" class="btn-azul">⬇️ Exportar Histórico</button>
       </div>
     </div>
+  </div>
 
-    <script src="script.js"></script>
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>
