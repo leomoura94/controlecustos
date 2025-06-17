@@ -1,62 +1,91 @@
-let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-let saldoBanco = 3000; // Defina seu saldo aqui
-let limiteMensal = 2000;
+let saldoInicial = 5000; // você pode alterar aqui o valor inicial
+let gastos = [];
 
-function processInput() {
-  const input = document.getElementById("user-input").value.trim();
-  if (!input) return;
+const form = document.getElementById("gastoForm");
+const saldoBancoEl = document.getElementById("saldoBanco");
+const totalGastoEl = document.getElementById("totalGasto");
+const ctx = document.getElementById("graficoGastos").getContext("2d");
 
-  const log = document.getElementById("chat-log");
-  log.innerHTML += `<div><strong>Você:</strong> ${input}</div>`;
-
-  const regex = /gastei\s*(\d+)[^\d]*(pix|crédito|débito)[^\d]*no\s*(.+?)\s*\((Leonardo|Camila)\)/i;
-  const match = input.match(regex);
-
-  if (match) {
-    const valor = parseFloat(match[1]);
-    const tipo = match[2].toLowerCase();
-    const categoria = match[3];
-    const quem = match[4];
-
-    const registro = {
-      valor,
-      tipo,
-      categoria,
-      quem,
-      data: new Date().toLocaleDateString()
-    };
-
-    gastos.push(registro);
-    localStorage.setItem("gastos", JSON.stringify(gastos));
-    log.innerHTML += `<div><strong>Bot:</strong> Gasto de R$${valor.toFixed(2)} em ${categoria} por ${quem} registrado com ${tipo}.</div>`;
-    atualizarResumo();
-  } else {
-    log.innerHTML += `<div><strong>Bot:</strong> Não entendi. Tente: "Gastei 150 no débito no mercado (Leonardo)"</div>`;
-  }
-
-  document.getElementById("user-input").value = "";
-  log.scrollTop = log.scrollHeight;
+// Carregar dados do localStorage
+if (localStorage.getItem("gastos")) {
+  gastos = JSON.parse(localStorage.getItem("gastos"));
+}
+if (localStorage.getItem("saldo")) {
+  saldoInicial = parseFloat(localStorage.getItem("saldo"));
 }
 
-function atualizarResumo() {
-  const resumoDiv = document.getElementById("resumo");
-  const totalGasto = gastos.reduce((sum, g) => sum + g.valor, 0);
-  const porCategoria = {};
+function formatarMoeda(valor) {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
 
-  gastos.forEach(g => {
-    if (!porCategoria[g.categoria]) porCategoria[g.categoria] = 0;
-    porCategoria[g.categoria] += g.valor;
+function atualizarPainel() {
+  const totalGasto = gastos.reduce((acc, g) => acc + g.valor, 0);
+  const saldoAtual = saldoInicial - totalGasto;
+
+  saldoBancoEl.textContent = formatarMoeda(saldoAtual);
+  totalGastoEl.textContent = formatarMoeda(totalGasto);
+
+  atualizarGrafico();
+  localStorage.setItem("gastos", JSON.stringify(gastos));
+  localStorage.setItem("saldo", saldoInicial.toString());
+}
+
+// Gráfico de categorias
+let grafico = new Chart(ctx, {
+  type: "doughnut",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "Gastos por Categoria",
+        data: [],
+        backgroundColor: [
+          "#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  },
+  options: {
+    plugins: {
+      legend: {
+        labels: { color: "#ccc" }
+      }
+    }
+  }
+});
+
+function atualizarGrafico() {
+  const categorias = {};
+  gastos.forEach((g) => {
+    categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
   });
 
-  let resumo = `<p><strong>Total Gasto:</strong> R$${totalGasto.toFixed(2)} / R$${limiteMensal.toFixed(2)}</p>`;
-  resumo += `<p><strong>Saldo no Banco:</strong> R$${(saldoBanco - totalGasto).toFixed(2)}</p>`;
-  resumo += `<ul>`;
-  for (let cat in porCategoria) {
-    resumo += `<li>${cat}: R$${porCategoria[cat].toFixed(2)}</li>`;
-  }
-  resumo += `</ul>`;
-
-  resumoDiv.innerHTML = resumo;
+  grafico.data.labels = Object.keys(categorias);
+  grafico.data.datasets[0].data = Object.values(categorias);
+  grafico.update();
 }
 
-window.onload = atualizarResumo;
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const quem = document.getElementById("quem").value;
+  const valor = parseFloat(document.getElementById("valor").value);
+  const categoria = document.getElementById("categoria").value.trim();
+  const tipo = document.getElementById("tipo").value;
+
+  if (!valor || valor <= 0 || categoria === "") {
+    alert("Preencha os campos corretamente.");
+    return;
+  }
+
+  gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
+
+  form.reset();
+  atualizarPainel();
+});
+
+atualizarPainel();
