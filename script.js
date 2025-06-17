@@ -137,4 +137,45 @@ function exportarDados() {
   URL.revokeObjectURL(url);
 }
 
+function exportarCSV() {
+  const linhas = [];
+  linhas.push("Tipo,Quem,Valor,Descrição/Categoria,Forma de Pagamento,Data");
+
+  entradas.forEach((e) => {
+    linhas.push(`entrada,${e.quem},${e.valor},"${e.descricao}",,"${e.data}"`);
+  });
+
+  gastos.forEach((g) => {
+    linhas.push(`gasto,${g.quem},${g.valor},"${g.categoria}",${g.tipo},"${g.data}"`);
+  });
+
+  const csv = linhas.join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "controle-de-gastos.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportarExcel() {
+  const dados = [];
+  dados.push(["Tipo", "Quem", "Valor", "Descrição/Categoria", "Forma de Pagamento", "Data"]);
+
+  entradas.forEach((e) => {
+    dados.push(["entrada", e.quem, e.valor, e.descricao, "", e.data]);
+  });
+
+  gastos.forEach((g) => {
+    dados.push(["gasto", g.quem, g.valor, g.categoria, g.tipo, g.data]);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Movimentações");
+
+  XLSX.writeFile(wb, "controle-de-gastos.xlsx");
+}
+
 atualizarPainel();
