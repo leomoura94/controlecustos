@@ -1,20 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chat de Gastos</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="chat-container">
-    <div class="chat-log" id="chat-log"></div>
-    <div class="chat-input">
-      <input type="text" id="user-input" placeholder="Ex: Gastei 100 no débito no mercado (Leonardo)" />
-      <button onclick="processInput()">Enviar</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Gastos - Leonardo e Camila</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <div class="min-h-screen flex flex-col items-center p-4">
+
+      <header class="w-full max-w-3xl text-center mb-6">
+        <h1 class="text-3xl font-bold">💸 Controle de Gastos</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Leonardo & Camila</p>
+      </header>
+
+      <!-- Resumo financeiro -->
+      <section class="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <h2 class="font-semibold mb-2">Saldo no Banco</h2>
+          <p id="saldoBanco" class="text-2xl font-bold text-green-500">R$ 0,00</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <h2 class="font-semibold mb-2">Limite Mensal</h2>
+          <p id="limiteMensal" class="text-2xl font-bold text-blue-500">R$ 0,00</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow col-span-1 sm:col-span-2">
+          <h2 class="font-semibold mb-2">Gasto Total no Mês</h2>
+          <p id="gastoTotal" class="text-2xl font-bold text-red-500">R$ 0,00</p>
+        </div>
+      </section>
+
+      <!-- Chat -->
+      <section class="w-full max-w-3xl flex flex-col h-[400px] bg-white dark:bg-gray-800 rounded-xl shadow p-4 overflow-y-auto mb-4" id="chat-log">
+        <!-- Mensagens aparecerão aqui -->
+      </section>
+
+      <!-- Campo de entrada -->
+      <section class="w-full max-w-3xl flex gap-2">
+        <input
+          id="user-input"
+          type="text"
+          placeholder="Ex: Camila gastou 100 no débito no mercado"
+          class="flex-1 p-3 rounded-xl bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+        />
+        <button onclick="processInput()" class="px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700">
+          Enviar
+        </button>
+      </section>
+
+      <!-- Gráfico -->
+      <section class="w-full max-w-3xl mt-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+        <h2 class="font-semibold mb-4">Distribuição por Categoria</h2>
+        <canvas id="graficoGastos" height="200"></canvas>
+      </section>
+
     </div>
-    <div class="resumo" id="resumo"></div>
-  </div>
-  <script src="script.js"></script>
-</body>
+
+    <script src="script.js"></script>
+  </body>
 </html>
