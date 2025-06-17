@@ -1,253 +1,233 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Controle de Gastos</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-</head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center min-h-screen p-4">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Gastos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+      <h1 class="text-3xl font-bold mb-4">Controle de Gastos</h1>
 
-  <div class="w-full max-w-3xl bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg text-center">
-    <h1 class="text-3xl font-bold mb-6">Controle de Gastos</h1>
+      <!-- Formulário de gastos -->
+      <form id="gastoForm" class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 text-center">
+        <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+          <option value="Leonardo">Leonardo</option>
+          <option value="Camila">Camila</option>
+        </select>
+        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+        <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+        <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+          <option value="pix">Pix</option>
+          <option value="debito">Débito</option>
+          <option value="credito">Crédito</option>
+        </select>
+        <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition md:col-span-4">Adicionar Gasto</button>
+      </form>
 
-    <!-- Formulário de Gastos -->
-    <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6 justify-center">
-      <select id="quem" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required>
-        <option value="Leonardo">Leonardo</option>
-        <option value="Camila">Camila</option>
-      </select>
-      <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <input type="text" id="categoria" placeholder="Categoria" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <select id="tipo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required>
-        <option value="pix">Pix</option>
-        <option value="debito">Débito</option>
-        <option value="credito">Crédito</option>
-      </select>
-      <button type="submit" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition">
-        Adicionar Gasto
-      </button>
-    </form>
+      <!-- Formulário de saldo -->
+      <form id="saldoForm" class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 text-center">
+        <select id="quemSaldo" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700">
+          <option value="Leonardo">Leonardo</option>
+          <option value="Camila">Camila</option>
+        </select>
+        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition">Adicionar Saldo</button>
+      </form>
 
-    <!-- Formulário de Saldo -->
-    <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 justify-center">
-      <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700" required />
-      <button type="submit" class="bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition">
-        Adicionar Saldo
-      </button>
-    </form>
+      <!-- Botão de Reset -->
+      <button id="resetar" class="bg-red-600 text-white px-6 py-3 mb-6 rounded-xl hover:bg-red-700 transition">Resetar Tudo</button>
 
-    <!-- Resumo -->
-    <div class="mb-6 text-left">
-      <h2 class="font-semibold text-xl mb-3">Resumo</h2>
-      <p><strong>Saldo no banco:</strong> <span id="saldoBanco">R$ 0,00</span></p>
-      <p><strong>Total gasto:</strong> <span id="totalGasto">R$ 0,00</span></p>
+      <!-- Resumo -->
+      <div class="w-full max-w-2xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6 text-center">
+        <h2 class="font-semibold mb-2">Resumo</h2>
+        <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
+        <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
+      </div>
+
+      <!-- Gráfico -->
+      <div class="w-full max-w-2xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+        <canvas id="graficoGastos" width="400" height="200"></canvas>
+      </div>
+
+      <!-- Histórico -->
+      <section class="w-full max-w-2xl bg-white dark:bg-gray-800 p-4 rounded-xl shadow mb-6">
+        <h2 class="font-semibold mb-4 text-center">📜 Histórico de Movimentações</h2>
+        <div id="historico" class="space-y-4 max-h-[300px] overflow-y-auto text-sm"></div>
+      </section>
     </div>
 
-    <!-- Gráfico -->
-    <div class="mb-6">
-      <canvas id="graficoGastos" width="400" height="200"></canvas>
-    </div>
+    <script>
+      let gastos = JSON.parse(localStorage.getItem("gastos") || "[]");
+      let entradas = JSON.parse(localStorage.getItem("entradas") || "[]");
 
-    <!-- Histórico -->
-    <section class="mb-6 text-left max-h-64 overflow-y-auto">
-      <h2 class="font-semibold text-xl mb-3">📜 Histórico de Movimentações</h2>
-      <div id="historico" class="text-sm space-y-3"></div>
-    </section>
+      const form = document.getElementById("gastoForm");
+      const saldoForm = document.getElementById("saldoForm");
+      const resetarBtn = document.getElementById("resetar");
+      const saldoBancoEl = document.getElementById("saldoBanco");
+      const totalGastoEl = document.getElementById("totalGasto");
+      const historicoEl = document.getElementById("historico");
+      const ctx = document.getElementById("graficoGastos").getContext("2d");
 
-    <!-- Botão Reset -->
-    <button id="btnReset" class="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition">
-      Resetar Saldo, Gastos e Histórico
-    </button>
-  </div>
+      function formatarMoeda(valor) {
+        return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      }
 
-  <script>
-    // Inicializa arrays
-    let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-    let entradas = JSON.parse(localStorage.getItem("entradas")) || [];
+      function calcularTotais() {
+        const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
+        const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
+        const saldoAtual = totalEntradas - totalGastos;
+        return { totalEntradas, totalGastos, saldoAtual };
+      }
 
-    // Elementos
-    const gastoForm = document.getElementById("gastoForm");
-    const saldoForm = document.getElementById("saldoForm");
-    const saldoBancoEl = document.getElementById("saldoBanco");
-    const totalGastoEl = document.getElementById("totalGasto");
-    const historicoEl = document.getElementById("historico");
-    const btnReset = document.getElementById("btnReset");
-    const ctx = document.getElementById("graficoGastos").getContext("2d");
+      function atualizarPainel() {
+        const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
 
-    // Formata valor para moeda brasileira
-    function formatarMoeda(valor) {
-      return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    }
+        saldoBancoEl.textContent = formatarMoeda(saldoAtual);
+        totalGastoEl.textContent = formatarMoeda(totalGastos);
 
-    // Calcula totais de entradas, gastos e saldo atual
-    function calcularTotais() {
-      const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
-      const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
-      const saldoAtual = totalEntradas - totalGastos;
-      return { totalEntradas, totalGastos, saldoAtual };
-    }
+        localStorage.setItem("gastos", JSON.stringify(gastos));
+        localStorage.setItem("entradas", JSON.stringify(entradas));
 
-    // Atualiza os dados na tela e no localStorage
-    function atualizarPainel() {
-      const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
+        atualizarGrafico();
+        renderizarHistorico();
+      }
 
-      saldoBancoEl.textContent = formatarMoeda(saldoAtual);
-      totalGastoEl.textContent = formatarMoeda(totalGastos);
-
-      localStorage.setItem("gastos", JSON.stringify(gastos));
-      localStorage.setItem("entradas", JSON.stringify(entradas));
-
-      atualizarGrafico();
-      renderizarHistorico();
-    }
-
-    // Configuração do gráfico (Chart.js)
-    const grafico = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: [],
-        datasets: [{
-          label: "Gastos por Categoria",
-          data: [],
-          backgroundColor: [
-            "#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185",
-            "#22d3ee", "#f43f5e", "#8b5cf6"
+      let grafico = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Gastos por Categoria",
+              data: [],
+              backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185"],
+              borderWidth: 1,
+            },
           ],
-          borderWidth: 1,
-        }],
-      },
-      options: {
-        plugins: {
-          legend: {
-            labels: { color: "#6b7280" } // cor cinza para legenda
+        },
+        options: {
+          plugins: {
+            legend: {
+              labels: { color: "#ccc" },
+            },
           },
         },
-        responsive: true,
-        maintainAspectRatio: false,
-      },
-    });
-
-    // Atualiza dados do gráfico
-    function atualizarGrafico() {
-      const categorias = {};
-      gastos.forEach((g) => {
-        categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
       });
 
-      grafico.data.labels = Object.keys(categorias);
-      grafico.data.datasets[0].data = Object.values(categorias);
-      grafico.update();
-    }
-
-    // Renderiza histórico agrupado por mês e com detalhes
-    function renderizarHistorico() {
-      historicoEl.innerHTML = "";
-
-      // Junta entradas e gastos em um só array
-      const todosMovimentos = [
-        ...entradas.map(e => ({
-          tipo: "entrada",
-          valor: e.valor,
-          descricao: e.descricao,
-          data: new Date(e.data)
-        })),
-        ...gastos.map(g => ({
-          tipo: "gasto",
-          quem: g.quem,
-          valor: g.valor,
-          categoria: g.categoria,
-          pagamento: g.tipo,
-          data: new Date(g.data)
-        }))
-      ];
-
-      // Ordena do mais recente para o mais antigo
-      todosMovimentos.sort((a,b) => b.data - a.data);
-
-      // Agrupa por mês e ano
-      const porMes = {};
-      todosMovimentos.forEach(mov => {
-        const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-        if (!porMes[mes]) porMes[mes] = [];
-        porMes[mes].push(mov);
-      });
-
-      // Para cada mês cria bloco e lista as movimentações
-      for(const mes in porMes) {
-        const bloco = document.createElement("div");
-        bloco.classList.add("mb-4");
-        bloco.innerHTML = `<h3 class="font-bold mb-2 capitalize">${mes}</h3>`;
-
-        porMes[mes].forEach(mov => {
-          let texto = "";
-          if (mov.tipo === "entrada") {
-            texto = `<span class="text-green-600 font-semibold">+ ${formatarMoeda(mov.valor)}</span> – ${mov.descricao}`;
-          } else {
-            texto = `<span class="text-red-600 font-semibold">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
-          }
-
-          const linha = document.createElement("p");
-          linha.className = "text-gray-700 dark:text-gray-300";
-          linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
-          bloco.appendChild(linha);
+      function atualizarGrafico() {
+        const categorias = {};
+        gastos.forEach((g) => {
+          categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
         });
 
-        historicoEl.appendChild(bloco);
-      }
-    }
-
-    // Eventos para enviar formulários
-
-    gastoForm.addEventListener("submit", e => {
-      e.preventDefault();
-
-      const quem = document.getElementById("quem").value;
-      const valor = parseFloat(document.getElementById("valor").value);
-      const categoria = document.getElementById("categoria").value.trim();
-      const tipo = document.getElementById("tipo").value;
-
-      if (!valor || valor <= 0 || categoria === "") {
-        alert("Preencha os campos corretamente.");
-        return;
+        grafico.data.labels = Object.keys(categorias);
+        grafico.data.datasets[0].data = Object.values(categorias);
+        grafico.update();
       }
 
-      gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
-      gastoForm.reset();
-      atualizarPainel();
-    });
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-    saldoForm.addEventListener("submit", e => {
-      e.preventDefault();
+        const quem = document.getElementById("quem").value;
+        const valor = parseFloat(document.getElementById("valor").value);
+        const categoria = document.getElementById("categoria").value.trim();
+        const tipo = document.getElementById("tipo").value;
 
-      const valor = parseFloat(document.getElementById("valorSaldo").value);
-      const descricao = document.getElementById("descricaoSaldo").value.trim();
+        if (!valor || valor <= 0 || categoria === "") {
+          alert("Preencha os campos corretamente.");
+          return;
+        }
 
-      if (!valor || valor <= 0 || descricao === "") {
-        alert("Preencha os campos corretamente.");
-        return;
-      }
-
-      entradas.push({ valor, descricao, data: new Date().toISOString() });
-      saldoForm.reset();
-      atualizarPainel();
-    });
-
-    // Botão para resetar tudo
-    btnReset.addEventListener("click", () => {
-      if (confirm("Tem certeza que deseja resetar saldo, gastos e histórico?")) {
-        gastos = [];
-        entradas = [];
-        localStorage.removeItem("gastos");
-        localStorage.removeItem("entradas");
+        gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
+        form.reset();
         atualizarPainel();
-      }
-    });
+      });
 
-    // Inicializa a página
-    atualizarPainel();
-  </script>
-</body>
+      saldoForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const quem = document.getElementById("quemSaldo").value;
+        const valor = parseFloat(document.getElementById("valorSaldo").value);
+        const descricao = document.getElementById("descricaoSaldo").value.trim();
+
+        if (!valor || valor <= 0 || descricao === "") {
+          alert("Preencha os campos corretamente.");
+          return;
+        }
+
+        entradas.push({ quem, valor, descricao, data: new Date().toISOString() });
+        saldoForm.reset();
+        atualizarPainel();
+      });
+
+      resetarBtn.addEventListener("click", () => {
+        if (confirm("Tem certeza que deseja resetar todos os dados?")) {
+          localStorage.clear();
+          gastos = [];
+          entradas = [];
+          atualizarPainel();
+        }
+      });
+
+      function renderizarHistorico() {
+        historicoEl.innerHTML = "";
+
+        const todosMovimentos = [
+          ...entradas.map((e) => ({
+            tipo: "entrada",
+            valor: e.valor,
+            quem: e.quem,
+            descricao: e.descricao,
+            data: new Date(e.data),
+          })),
+          ...gastos.map((g) => ({
+            tipo: "gasto",
+            quem: g.quem,
+            valor: g.valor,
+            categoria: g.categoria,
+            pagamento: g.tipo,
+            data: new Date(g.data),
+          })),
+        ];
+
+        todosMovimentos.sort((a, b) => b.data - a.data);
+
+        const porMes = {};
+
+        todosMovimentos.forEach((mov) => {
+          const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+          if (!porMes[mes]) porMes[mes] = [];
+          porMes[mes].push(mov);
+        });
+
+        for (const mes in porMes) {
+          const bloco = document.createElement("div");
+          bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
+
+          porMes[mes].forEach((mov) => {
+            let texto = "";
+
+            if (mov.tipo === "entrada") {
+              texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.descricao}`;
+            } else {
+              texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
+            }
+
+            const linha = document.createElement("p");
+            linha.className = "text-gray-700 dark:text-gray-300";
+            linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
+            bloco.appendChild(linha);
+          });
+
+          historicoEl.appendChild(bloco);
+        }
+      }
+
+      atualizarPainel();
+    </script>
+  </body>
 </html>
